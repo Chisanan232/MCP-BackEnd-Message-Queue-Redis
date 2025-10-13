@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12, <3.14"
 
 [[package]]
@@ -91,6 +91,45 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/5a/b0/1367933a8532ee6ff8d63537de4f1177af4bff9f3e829baf7331f595bb24/attrs-25.3.0.tar.gz", hash = "sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b", size = 812032, upload-time = "2025-03-13T11:10:22.779Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/77/06/bb80f5f86020c4551da315d78b3ab75e8228f89f0162f2c3a819e407941a/attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3", size = 63815, upload-time = "2025-03-13T11:10:21.14Z" },
+]
+
+[[package]]
+name = "be-component-loader-redis"
+version = "0.0.0"
+source = { editable = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "aiohttp" },
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
+    { name = "pytest-rerunfailures" },
+    { name = "python-dotenv" },
+]
+pre-commit-ci = [
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "pylint" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "aiohttp", specifier = ">=3.12.13" },
+    { name = "coverage", specifier = "~=7.10" },
+    { name = "pytest", specifier = ">=8.1.1,<9" },
+    { name = "pytest-asyncio", specifier = ">=0.23.0,<2" },
+    { name = "pytest-cov", specifier = ">=5.0.0,<8" },
+    { name = "pytest-rerunfailures", specifier = ">=14.0,<17" },
+    { name = "python-dotenv", specifier = ">=1.0.1,<2" },
+]
+pre-commit-ci = [
+    { name = "mypy", specifier = ">=1.2.0,<2" },
+    { name = "pre-commit", specifier = ">=3.5.0,<5" },
+    { name = "pylint", specifier = ">=3.1.0,<4" },
 ]
 
 [[package]]
@@ -619,45 +658,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/de/94/980b50a6531b3019e45ddeada0626d45fa85cbe22300844a7983285bed3b/pyyaml-6.0.3-cp313-cp313-win32.whl", hash = "sha256:d0eae10f8159e8fdad514efdc92d74fd8d682c933a6dd088030f3834bc8e6b26", size = 137427, upload-time = "2025-09-25T21:32:32.58Z" },
     { url = "https://files.pythonhosted.org/packages/97/c9/39d5b874e8b28845e4ec2202b5da735d0199dbe5b8fb85f91398814a9a46/pyyaml-6.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:79005a0d97d5ddabfeeea4cf676af11e647e41d81c9a7722a193022accdb6b7c", size = 154090, upload-time = "2025-09-25T21:32:33.659Z" },
     { url = "https://files.pythonhosted.org/packages/73/e8/2bdf3ca2090f68bb3d75b44da7bbc71843b19c9f2b9cb9b0f4ab7a5a4329/pyyaml-6.0.3-cp313-cp313-win_arm64.whl", hash = "sha256:5498cd1645aa724a7c71c8f378eb29ebe23da2fc0d7a08071d89469bf1d2defb", size = 140246, upload-time = "2025-09-25T21:32:34.663Z" },
-]
-
-[[package]]
-name = "slack-mcp-mq-template"
-version = "0.0.0"
-source = { editable = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "aiohttp" },
-    { name = "coverage" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-rerunfailures" },
-    { name = "python-dotenv" },
-]
-pre-commit-ci = [
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "pylint" },
-]
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "aiohttp", specifier = ">=3.12.13" },
-    { name = "coverage", specifier = "~=7.10" },
-    { name = "pytest", specifier = ">=8.1.1,<9" },
-    { name = "pytest-asyncio", specifier = ">=0.23.0,<2" },
-    { name = "pytest-cov", specifier = ">=5.0.0,<8" },
-    { name = "pytest-rerunfailures", specifier = ">=14.0,<17" },
-    { name = "python-dotenv", specifier = ">=1.0.1,<2" },
-]
-pre-commit-ci = [
-    { name = "mypy", specifier = ">=1.2.0,<2" },
-    { name = "pre-commit", specifier = ">=3.5.0,<5" },
-    { name = "pylint", specifier = ">=3.1.0,<4" },
 ]
 
 [[package]]

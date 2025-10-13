@@ -5,14 +5,14 @@ import remarkGfm from 'remark-gfm';
 import remarkMdxCodeMeta from 'remark-mdx-code-meta';
 
 const config: Config = {
-  title: 'slack-mcp-server-mq-template',
-  tagline: '🐍 Just a template of strong Slack MCP server message queue component plugin project.',
+  title: 'be-component-loader-redis',
+  tagline: '🐍 A Redis-based message queue backend component loader for Slack MCP server.',
   favicon: 'img/python_logo_icon.png',
 
   // Set the production url of your site here
   url: 'https://chisanan232.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
-  baseUrl: '/Slack-MCP-Server-Backend-MQ-Template/',
+  baseUrl: '/MCP-BackEnd-Message-Queue-Redis/',
   projectName: 'chisanan232.github.io',
   organizationName: 'Chisanan232',
   trailingSlash: false,
@@ -66,7 +66,7 @@ const config: Config = {
         showLastUpdateTime: true,
         showLastUpdateAuthor: true,
         editUrl:
-          'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template/tree/master/docs/',
+          'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/tree/master/docs/',
         versions: {
           current: {
             label: 'Next',
@@ -90,7 +90,7 @@ const config: Config = {
         showLastUpdateTime: true,
         showLastUpdateAuthor: true,
         editUrl:
-          'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template/tree/master/docs/',
+          'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/tree/master/docs/',
         versions: {
           current: {
             label: 'Next',
@@ -111,7 +111,7 @@ const config: Config = {
         routeBasePath: 'blog',
         showReadingTime: true,
         editUrl:
-          'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template/tree/master/docs/',
+          'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/tree/master/docs/',
       },
     ],
     [
@@ -120,7 +120,7 @@ const config: Config = {
         // Options for docusaurus-search-local
         hashed: true,
         language: ['en'],
-        docsRouteBasePath: ['/slack-mcp-server-mq-template'],
+        docsRouteBasePath: ['/be-component-loader-redis'],
         docsDir: ['./contents/document', './contents/development'],
         blogDir: ['./contents/blog'],
         highlightSearchTermsOnTargetPage: true,
@@ -141,7 +141,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/python_logo_icon.png',
     navbar: {
-      title: 'Slack-MCP-Server-MQ-Template',
+      title: 'be-component-loader-redis',
       logo: {
         alt: 'My Site Logo',
         src: 'img/python_logo_icon.png',
@@ -182,7 +182,7 @@ const config: Config = {
           dropdownItemsAfter: [],
         },
         {
-          href: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template',
+          href: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis',
           label: 'GitHub',
           position: 'right',
         },
@@ -213,11 +213,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Issues',
-              href: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template/issues',
+              href: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/issues',
             },
             {
               label: 'GitHub Discussions',
-              href: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template/discussions',
+              href: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/discussions',
             },
           ],
         },
@@ -226,7 +226,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Repository',
-              href: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template',
+              href: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis',
             },
           ],
         },
@@ -247,7 +247,7 @@ const config: Config = {
       tagName: 'link',
       attributes: {
         rel: 'canonical',
-        href: 'https://chisanan232.github.io/Slack-MCP-Server-Backend-MQ-Template/docs/introduction',
+        href: 'https://chisanan232.github.io/MCP-BackEnd-Message-Queue-Redis/docs/introduction',
       },
     },
   ],
