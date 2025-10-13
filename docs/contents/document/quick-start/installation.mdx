@@ -1,0 +1,309 @@
+---
+id: installation
+title: Installation
+sidebar_position: 2
+---
+
+```mdx-code-block
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+```
+
+# Creating Your Slack MCP Server Message Queue Plugin
+
+This guide provides step-by-step instructions for setting up your message queue plugin project using this template.
+
+## Method 1: Using GitHub Template (Recommended)
+
+### Step 1: Create Repository from Template
+
+1. Navigate to the [Slack MCP Server MQ Template repository](https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template)
+2. Click the **"Use this template"** button (green button)
+3. Select **"Create a new repository"**
+4. Configure your new repository:
+   - **Repository name**: `slack-mcp-<your-queue-name>-backend` (e.g., `slack-mcp-redis-backend`)
+   - **Description**: `Message queue backend plugin for Slack MCP Server using <Your Queue Service>`
+   - **Visibility**: Choose Public (recommended for community plugins) or Private
+   - **Include all branches**: Leave unchecked
+
+### Step 2: Clone Your New Repository
+
+```bash
+git clone https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend.git
+cd slack-mcp-YOUR-QUEUE-backend
+```
+
+## Method 2: Manual Setup
+
+### Step 1: Download or Clone Template
+
+<Tabs>
+<TabItem value="git-clone" label="Git Clone">
+
+```bash
+git clone https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template.git slack-mcp-your-queue-backend
+cd slack-mcp-your-queue-backend
+rm -rf .git  # Remove template's git history
+git init     # Initialize new git repository
+```
+
+</TabItem>
+<TabItem value="download" label="Download ZIP">
+
+1. Download the template as a ZIP file from GitHub
+2. Extract to your desired directory
+3. Rename the folder to your project name
+4. Initialize a new git repository:
+
+```bash
+cd your-project-directory
+git init
+```
+
+</TabItem>
+</Tabs>
+
+## Step 3: Project Customization
+
+### Update Project Metadata
+
+Edit `pyproject.toml` to customize your plugin:
+
+```toml
+[project]
+name = "slack-mcp-YOUR-QUEUE-backend"  # Replace YOUR-QUEUE
+version = "0.1.0"
+description = "📮 A YOUR-QUEUE message queue backend plugin for Slack MCP Server."
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+
+# Update URLs to your repository
+[project.urls]
+Homepage = "https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend"
+Repository = "https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend"
+Documentation = "https://YOUR-USERNAME.github.io/slack-mcp-YOUR-QUEUE-backend/"
+
+# Configure your plugin entry point
+[project.entry-points."slack_mcp.backends.queue"]
+your_queue_name = "slack_mcp.backends.queue.your_queue:YourQueueBackend"
+```
+
+### Rename Source Files
+
+Update the source file structure to match your queue implementation:
+
+```bash
+# Rename the main implementation file
+mv src/memory.py src/your_queue.py
+
+# Update the module structure if needed
+mkdir -p src/slack_mcp/backends/queue/
+mv src/your_queue.py src/slack_mcp/backends/queue/
+```
+
+### Update Documentation
+
+1. **README.md**: Replace template content with your queue-specific information
+2. **Documentation**: Update docs in `docs/contents/document/` with your implementation details
+3. **Changelog**: Document your initial version in `docs/contents/document/changelog.mdx`
+
+## Step 4: Development Environment Setup
+
+### Initialize the Project
+
+```bash
+# Create virtual environment and install dependencies
+uv sync
+
+# Activate the virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or .venv\Scripts\activate  # Windows
+```
+
+### Install Development Dependencies
+
+```bash
+# Install all development dependencies
+uv sync --group dev
+
+# Install pre-commit hooks
+uv run pre-commit install
+```
+
+### Verify Installation
+
+```bash
+# Run tests to ensure everything is working
+uv run pytest
+
+# Check code quality
+uv run black --check .
+uv run pylint src/
+uv run mypy src/
+```
+
+## Step 5: Implement Your Queue Backend
+
+### Basic Implementation Structure
+
+Replace the template implementation in your main source file:
+
+```python
+"""
+Your Queue Backend Implementation
+
+This module provides a YOUR-QUEUE implementation of the QueueBackend protocol
+for the Slack MCP Server.
+"""
+
+import os
+from typing import Any, AsyncIterator, Dict
+from slack_mcp.backends.base.protocol import QueueBackend
+
+
+class YourQueueBackend(QueueBackend):
+    """YOUR-QUEUE implementation of QueueBackend."""
+
+    def __init__(self, connection_url: str):
+        """Initialize the YOUR-QUEUE backend.
+        
+        Args:
+            connection_url: Connection string for YOUR-QUEUE service
+        """
+        self.connection_url = connection_url
+        # Initialize your queue client here
+
+    @classmethod
+    def from_env(cls) -> "YourQueueBackend":
+        """Create instance from environment variables.
+        
+        Expected environment variables:
+        - YOUR_QUEUE_URL: Connection URL for YOUR-QUEUE service
+        
+        Returns:
+            Configured YourQueueBackend instance
+        """
+        connection_url = os.environ.get("YOUR_QUEUE_URL", "default://localhost")
+        return cls(connection_url)
+
+    async def publish(self, key: str, payload: Dict[str, Any]) -> None:
+        """Publish a message to YOUR-QUEUE."""
+        # Implement your publish logic here
+        pass
+
+    async def consume(self, key: str) -> AsyncIterator[Dict[str, Any]]:
+        """Consume messages from YOUR-QUEUE."""
+        # Implement your consume logic here
+        while True:
+            # Yield messages as they arrive
+            yield {}
+```
+
+## Step 6: Configuration Examples
+
+### Environment Variables
+
+Create example configuration for users:
+
+```bash
+# .env.example
+YOUR_QUEUE_URL=redis://localhost:6379/0
+YOUR_QUEUE_PASSWORD=optional_password
+YOUR_QUEUE_SSL=false
+QUEUE_BACKEND=your_queue_name
+```
+
+### Docker Compose (Optional)
+
+If your queue service can run in Docker, provide a `docker-compose.yml`:
+
+```yaml
+version: '3.8'
+services:
+  your-queue:
+    image: your-queue:latest
+    ports:
+      - "6379:6379"  # Adjust port as needed
+    environment:
+      - YOUR_QUEUE_CONFIG=value
+```
+
+## Step 7: Testing Your Implementation
+
+### Write Tests
+
+Create tests in `test/unit_test/` for your implementation:
+
+```python
+import pytest
+from your_module import YourQueueBackend
+
+@pytest.mark.asyncio
+async def test_publish_consume():
+    """Test basic publish/consume functionality."""
+    backend = YourQueueBackend.from_env()
+    
+    # Test publishing
+    await backend.publish("test-key", {"message": "hello"})
+    
+    # Test consuming
+    async for message in backend.consume("test-key"):
+        assert message["message"] == "hello"
+        break
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov=src --cov-report=html
+```
+
+## Step 8: Documentation Setup
+
+### Build Documentation
+
+```bash
+cd docs
+npm install  # or pnpm install
+npm run build
+```
+
+### Update Documentation Content
+
+1. Edit `docs/contents/document/introduction.mdx` with your queue-specific details
+2. Add configuration examples in `docs/contents/document/quick-start/`
+3. Include API documentation for your implementation
+
+## Next Steps
+
+Now that your project is set up:
+
+1. 🔧 **[Implement your queue logic](./how-to-run)** - Build the core functionality
+2. 🧪 **Test your implementation** - Ensure reliability and performance
+3. 📚 **Document your plugin** - Help users understand how to use it
+4. 🚀 **Publish your package** - Share with the Slack MCP Server community
+
+## Common Setup Issues
+
+### Import Errors
+```bash
+# If you get import errors
+uv sync --reinstall
+```
+
+### Pre-commit Hook Failures
+```bash
+# If pre-commit hooks fail
+uv run pre-commit run --all-files
+```
+
+### Test Failures
+```bash
+# If tests fail due to missing dependencies
+uv add --group dev your-missing-dependency
+```
+
+Ready to start implementing? Head to the [implementation guide](./how-to-run)!
