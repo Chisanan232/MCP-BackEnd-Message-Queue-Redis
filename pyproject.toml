@@ -32,7 +32,10 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 #    "Programming Language :: Python :: 3.14",  # TODO: Because of PyO3's maximum supported version (3.13)
 ]
-dependencies = []
+dependencies = [
+    "redis[hiredis]>=6.4.0",
+    "slack-mcp>=0.0.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis"
@@ -42,7 +45,7 @@ Changelog = "https://chisanan232.github.io/MCP-BackEnd-Message-Queue-Redis/docs/
 "Project Management" = "https://app.clickup.com/9018752317/v/f/90185744047/90184991515"
 
 [project.entry-points."slack_mcp.backends.queue"]
-redis = "slack_mcp.backends.queue.redis:RedisMessageQueueBackend"
+redis = "slack_mcp_plugin.backends.queue.redis:RedisMessageQueueBackend"
 
 [dependency-groups]
 dev = [
@@ -67,11 +70,11 @@ default-groups = [
 ]
 
 [tool.hatch.build.targets.sdist]
-include = ["slack_mcp/"]
-packages = ["slack_mcp/backends/queue"]
-#artifacts = ["slack_mcp/py.typed"]
+include = ["slack_mcp_plugin/"]
+packages = ["slack_mcp_plugin/backends/queue"]
+#artifacts = ["slack_mcp_plugin/py.typed"]
 
 [tool.hatch.build.targets.wheel]
-include = ["slack_mcp/"]
-packages = ["slack_mcp/backends/queue"]
+include = ["slack_mcp_plugin/"]
+packages = ["slack_mcp_plugin/backends/queue"]
 #artifacts = ["slack_mcp/py.typed"]
