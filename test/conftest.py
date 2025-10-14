@@ -35,15 +35,15 @@ def event_loop(event_loop_policy: asyncio.AbstractEventLoopPolicy) -> Generator:
 @pytest.fixture(autouse=True)
 def reset_env_vars() -> Generator:
     """Reset environment variables before each test.
-    
+
     This ensures tests don't interfere with each other through
     environment variable side effects.
     """
     # Save current environment
     original_env = dict(os.environ)
-    
+
     yield
-    
+
     # Restore original environment
     os.environ.clear()
     os.environ.update(original_env)

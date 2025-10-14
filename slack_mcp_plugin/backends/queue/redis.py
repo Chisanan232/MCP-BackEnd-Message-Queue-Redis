@@ -13,6 +13,7 @@ from typing import Any
 
 import redis.asyncio as aioredis
 from redis.asyncio.client import Redis
+
 from slack_mcp.backends.base.protocol import QueueBackend
 
 __all__ = ["RedisMessageQueueBackend"]
@@ -22,18 +23,18 @@ logger = logging.getLogger(__name__)
 
 class RedisMessageQueueBackend(QueueBackend):
     """Redis Streams-based message queue backend implementation.
-    
+
     This backend uses Redis Streams for reliable message queueing with support
     for consumer groups. It provides asynchronous publish/consume operations
     with automatic connection management and error handling.
-    
+
     Environment Variables:
         REDIS_URL: Redis connection URL (default: redis://localhost:6379/0)
         REDIS_PASSWORD: Redis password (optional)
         REDIS_SSL: Enable SSL/TLS connection (default: false)
         REDIS_MAX_CONNECTIONS: Maximum connection pool size (default: 10)
         REDIS_STREAM_MAXLEN: Maximum stream length for trimming (default: 10000)
-    
+
     Example:
         >>> import os
         >>> os.environ["REDIS_URL"] = "redis://localhost:6379/0"
@@ -52,7 +53,7 @@ class RedisMessageQueueBackend(QueueBackend):
         stream_maxlen: int = 10000,
     ) -> None:
         """Initialize the Redis message queue backend.
-        
+
         Args:
             redis_url: Redis connection URL (e.g., redis://localhost:6379/0)
             password: Optional Redis password for authentication
@@ -76,17 +77,17 @@ class RedisMessageQueueBackend(QueueBackend):
     @classmethod
     def from_env(cls) -> "RedisMessageQueueBackend":
         """Create a Redis backend instance from environment variables.
-        
+
         Reads configuration from the following environment variables:
         - REDIS_URL: Connection URL (default: redis://localhost:6379/0)
         - REDIS_PASSWORD: Authentication password (optional)
         - REDIS_SSL: Enable SSL (default: false)
         - REDIS_MAX_CONNECTIONS: Pool size (default: 10)
         - REDIS_STREAM_MAXLEN: Stream max length (default: 10000)
-        
+
         Returns:
             Configured RedisMessageQueueBackend instance
-            
+
         Raises:
             ValueError: If REDIS_URL format is invalid
         """
@@ -107,7 +108,7 @@ class RedisMessageQueueBackend(QueueBackend):
 
     async def _ensure_connected(self) -> None:
         """Ensure connection to Redis server is established.
-        
+
         Raises:
             ConnectionError: If unable to connect to Redis
         """
@@ -116,9 +117,9 @@ class RedisMessageQueueBackend(QueueBackend):
 
     async def _connect(self) -> None:
         """Establish connection to Redis server.
-        
+
         Creates a connection pool and validates the connection with a PING.
-        
+
         Raises:
             ConnectionError: If connection to Redis fails
         """
@@ -140,22 +141,22 @@ class RedisMessageQueueBackend(QueueBackend):
 
     async def publish(self, key: str, payload: dict[str, Any]) -> None:
         """Publish a message to a Redis stream.
-        
+
         Publishes the payload as JSON to a Redis stream identified by the key.
         Automatically trims the stream to REDIS_STREAM_MAXLEN to prevent
         unbounded growth.
-        
+
         Args:
             key: Redis stream name/key
             payload: Message data as a dictionary (must be JSON-serializable)
-            
+
         Raises:
             ConnectionError: If connection to Redis is lost
             ValueError: If payload cannot be serialized to JSON
             RuntimeError: If publishing fails
         """
         await self._ensure_connected()
-        
+
         if self._client is None:
             raise RuntimeError("Redis client is not initialized")
 
@@ -183,25 +184,25 @@ class RedisMessageQueueBackend(QueueBackend):
         group: str | None = None,
     ) -> AsyncIterator[dict[str, Any]]:
         """Consume messages from Redis streams.
-        
+
         Continuously consumes messages from all streams matching the pattern
         'slack:*'. Supports consumer groups for distributed consumption.
-        
+
         When a consumer group is specified, messages are distributed among
         consumers in the group using Redis Streams consumer groups.
-        
+
         Args:
             group: Optional consumer group name for distributed consumption
-            
+
         Yields:
             Message payloads as dictionaries
-            
+
         Raises:
             ConnectionError: If connection to Redis is lost
             RuntimeError: If consumption fails
         """
         await self._ensure_connected()
-        
+
         if self._client is None:
             raise RuntimeError("Redis client is not initialized")
 
@@ -212,9 +213,7 @@ class RedisMessageQueueBackend(QueueBackend):
         try:
             if group:
                 # Use consumer groups for distributed consumption
-                async for message in self._consume_with_group(
-                    stream_pattern, group, consumer_name
-                ):
+                async for message in self._consume_with_group(stream_pattern, group, consumer_name):
                     yield message
             else:
                 # Simple consumption without groups
@@ -229,10 +228,10 @@ class RedisMessageQueueBackend(QueueBackend):
 
     async def _consume_simple(self, pattern: str) -> AsyncIterator[dict[str, Any]]:
         """Consume messages without consumer groups.
-        
+
         Args:
             pattern: Stream key pattern to consume from
-            
+
         Yields:
             Message payloads as dictionaries
         """
@@ -257,7 +256,7 @@ class RedisMessageQueueBackend(QueueBackend):
                         for message_id, fields in messages:
                             # Update last seen ID
                             stream_ids[stream_name] = message_id
-                            
+
                             # Parse message data
                             data = fields.get(b"data", b"{}")
                             try:
@@ -273,7 +272,7 @@ class RedisMessageQueueBackend(QueueBackend):
                 else:
                     # No messages, yield control
                     await asyncio.sleep(0.1)
-                    
+
             except asyncio.CancelledError:
                 raise
             except Exception as e:
@@ -287,12 +286,12 @@ class RedisMessageQueueBackend(QueueBackend):
         consumer_name: str,
     ) -> AsyncIterator[dict[str, Any]]:
         """Consume messages using Redis consumer groups.
-        
+
         Args:
             pattern: Stream key pattern to consume from
             group: Consumer group name
             consumer_name: Individual consumer identifier
-            
+
         Yields:
             Message payloads as dictionaries
         """
@@ -340,12 +339,10 @@ class RedisMessageQueueBackend(QueueBackend):
                             data = fields.get(b"data", b"{}")
                             try:
                                 payload = json.loads(data.decode("utf-8"))
-                                
+
                                 # Acknowledge message
-                                await self._client.xack(
-                                    stream_name, group, message_id
-                                )
-                                
+                                await self._client.xack(stream_name, group, message_id)
+
                                 yield payload
                             except json.JSONDecodeError as e:
                                 logger.warning(
@@ -354,14 +351,12 @@ class RedisMessageQueueBackend(QueueBackend):
                                     e,
                                 )
                                 # Still acknowledge to prevent reprocessing
-                                await self._client.xack(
-                                    stream_name, group, message_id
-                                )
+                                await self._client.xack(stream_name, group, message_id)
                                 continue
                 else:
                     # No messages, yield control
                     await asyncio.sleep(0.1)
-                    
+
             except asyncio.CancelledError:
                 raise
             except Exception as e:
@@ -370,10 +365,10 @@ class RedisMessageQueueBackend(QueueBackend):
 
     async def _get_streams_by_pattern(self, pattern: str) -> list[bytes]:
         """Get all Redis keys matching the given pattern.
-        
+
         Args:
             pattern: Key pattern (e.g., 'slack:*')
-            
+
         Returns:
             List of matching stream keys
         """
