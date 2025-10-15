@@ -49,7 +49,7 @@ repos:
     rev: v1.16.0
     hooks:
       - id: mypy
-        package: slack_mcp,test
+        package: slack_mcp_plugin,test
   #      exclude: ^test/unit_test.{1,64}.py
         args:
   #        - --strict
