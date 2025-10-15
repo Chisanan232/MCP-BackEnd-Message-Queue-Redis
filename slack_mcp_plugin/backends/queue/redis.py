@@ -13,6 +13,7 @@ from typing import Any
 
 import redis.asyncio as aioredis
 from redis.asyncio.client import Redis
+
 from slack_mcp.backends.base.protocol import QueueBackend  # type: ignore[attr-defined]
 
 __all__ = ["RedisMessageQueueBackend"]
