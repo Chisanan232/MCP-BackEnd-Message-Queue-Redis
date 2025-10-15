@@ -7,9 +7,11 @@ and integration tests.
 import asyncio
 import logging
 import os
-from typing import Generator
+from typing import AsyncGenerator, Generator
 
 import pytest
+import pytest_asyncio
+from testcontainers.redis import RedisContainer
 
 # Configure logging for tests
 logging.basicConfig(
@@ -92,3 +94,63 @@ def mock_slack_command() -> dict:
         "response_url": "https://hooks.slack.com/commands/123/456",
         "trigger_id": "123.456.789",
     }
+
+
+# ============================================================================
+# Integration Test Fixtures (Testcontainers)
+# ============================================================================
+
+
+@pytest.fixture(scope="session")
+def redis_container() -> Generator[RedisContainer, None, None]:
+    """Provide a Redis container for integration tests (session-scoped).
+
+    This fixture starts a Redis container once per test session and reuses it
+    across all integration tests for better performance. The container is
+    automatically cleaned up after all tests complete.
+    Yields:
+        RedisContainer: Running Redis container instance
+
+    Example:
+        >>> def test_something(redis_container):
+        ...     host = redis_container.get_container_host_ip()
+        ...     port = redis_container.get_exposed_port(6379)
+        ...     redis_url = f"redis://{host}:{port}/0"
+    """
+    # Start Redis container with Redis 7
+    container = RedisContainer(image="redis:7-alpine")
+    container.start()
+
+    try:
+        # Wait for Redis to be ready
+        client = container.get_client()
+        client.ping()
+        
+        host = container.get_container_host_ip()
+        port = container.get_exposed_port(6379)
+        logging.info("Redis container started: redis://%s:%s/0", host, port)
+        
+        yield container
+    finally:
+        # Cleanup: stop and remove container
+        container.stop()
+        logging.info("Redis container stopped")
+
+@pytest.fixture(scope="session")
+def redis_connection_url(redis_container: RedisContainer) -> str:
+    """Provide Redis connection URL from the container (session-scoped).
+
+    Args:
+        redis_container: Redis container fixture
+
+    Returns:
+        Redis connection URL string (format: redis://host:port/0)
+
+    Example:
+        >>> def test_connection(redis_connection_url):
+        ...     backend = RedisMessageQueueBackend(redis_url=redis_connection_url)
+        ...     await backend._connect()
+    """
+    host = redis_container.get_container_host_ip()
+    port = redis_container.get_exposed_port(6379)
+    return f"redis://{host}:{port}/0"
