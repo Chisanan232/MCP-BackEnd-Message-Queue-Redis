@@ -14,7 +14,6 @@ const sidebars: SidebarsConfig = {
         'quick-start/quick-start',
         'quick-start/requirements',
         'quick-start/installation',
-        'quick-start/how-to-run',
       ],
     },
     {
