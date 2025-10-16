@@ -96,10 +96,9 @@ class TestRedisMessageQueueBackendConnection:
             assert backend._connected is True
             assert backend._client is mock_client
             mock_client.ping.assert_called_once()
+            # Only max_connections and decode_responses are passed when password and ssl are not set
             mock_from_url.assert_called_once_with(
                 "redis://localhost:6379/0",
-                password=None,
-                ssl=False,
                 max_connections=10,
                 decode_responses=False,
             )

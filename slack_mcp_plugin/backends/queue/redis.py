@@ -123,12 +123,25 @@ class RedisMessageQueueBackend(QueueBackend):
             ConnectionError: If connection to Redis fails
         """
         try:
+            # Build connection kwargs
+            connection_kwargs: dict[str, Any] = {
+                "max_connections": self._max_connections,
+                "decode_responses": False,
+            }
+
+            # Add password if provided
+            if self._password:
+                connection_kwargs["password"] = self._password
+
+            # Add SSL if enabled (use ssl_context for SSL connections)
+            if self._ssl:
+                import ssl as ssl_module
+
+                connection_kwargs["ssl"] = ssl_module.create_default_context()
+
             self._client = await aioredis.from_url(
                 self._redis_url,
-                password=self._password,
-                ssl=self._ssl,
-                max_connections=self._max_connections,
-                decode_responses=False,
+                **connection_kwargs,
             )
             # Validate connection
             await self._client.ping()
@@ -237,18 +250,35 @@ class RedisMessageQueueBackend(QueueBackend):
         if self._client is None:
             raise RuntimeError("Redis client is not initialized")
 
-        # Get all streams matching pattern
-        streams = await self._get_streams_by_pattern(pattern)
-        stream_ids = {stream: b"$" for stream in streams}
+        stream_ids: dict[bytes, bytes] = {}
+        refresh_counter = 0
 
         while True:
             try:
+                # Refresh stream list every iteration when no streams, otherwise every 2 iterations
+                should_refresh = (not stream_ids) or (refresh_counter % 2 == 0)
+                if should_refresh:
+                    streams = await self._get_streams_by_pattern(pattern)
+                    # Add new streams with $ (new messages only)
+                    for stream in streams:
+                        if stream not in stream_ids:
+                            stream_ids[stream] = b"$"
+                            logger.info(f"Added stream {stream.decode('utf-8')} for consumption")
+                refresh_counter += 1
+
+                # Skip if no streams to read from
+                if not stream_ids:
+                    await asyncio.sleep(0.05)  # Shorter sleep when waiting for streams
+                    continue
+
                 # Read from multiple streams
                 result = await self._client.xread(
                     streams=stream_ids,
                     count=10,
                     block=1000,  # Block for 1 second
                 )
+
+                logger.debug(f"xread result: {len(result) if result else 0} streams with messages")
 
                 if result:
                     for stream_name, messages in result:
@@ -275,21 +305,16 @@ class RedisMessageQueueBackend(QueueBackend):
             except asyncio.CancelledError:
                 raise
             except Exception as e:
-                logger.error("Error reading from streams: %s", e)
+                logger.error("Error during simple consumption: %s", e)
                 await asyncio.sleep(1)
 
-    async def _consume_with_group(
-        self,
-        pattern: str,
-        group: str,
-        consumer_name: str,
-    ) -> AsyncIterator[dict[str, Any]]:
-        """Consume messages using Redis consumer groups.
+    async def _consume_with_group(self, pattern: str, group: str, consumer_name: str) -> AsyncIterator[dict[str, Any]]:
+        """Consume messages using consumer groups.
 
         Args:
             pattern: Stream key pattern to consume from
             group: Consumer group name
-            consumer_name: Individual consumer identifier
+            consumer_name: Unique consumer identifier
 
         Yields:
             Message payloads as dictionaries
@@ -297,31 +322,28 @@ class RedisMessageQueueBackend(QueueBackend):
         if self._client is None:
             raise RuntimeError("Redis client is not initialized")
 
-        # Get all streams matching pattern
-        streams = await self._get_streams_by_pattern(pattern)
-
-        # Create consumer groups for all streams
-        for stream in streams:
-            try:
-                await self._client.xgroup_create(
-                    name=stream,
-                    groupname=group,
-                    id="0",
-                    mkstream=True,
-                )
-                logger.info(
-                    "Created consumer group '%s' for stream '%s'",
-                    group,
-                    stream.decode("utf-8"),
-                )
-            except Exception:
-                # Group already exists, ignore
-                pass
-
-        stream_ids = {stream: b">" for stream in streams}
+        stream_ids: dict[bytes, bytes] = {}
+        refresh_counter = 0
 
         while True:
             try:
+                # Refresh stream list every iteration when no streams, otherwise every 5 iterations
+                should_refresh = (not stream_ids) or (refresh_counter % 5 == 0)
+                if should_refresh:
+                    streams = await self._get_streams_by_pattern(pattern)
+                    # Create consumer groups and add new streams
+                    for stream in streams:
+                        if stream not in stream_ids:
+                            await self._ensure_consumer_group(stream, group)
+                            stream_ids[stream] = b">"  # Read new messages for this consumer
+                            logger.debug(f"Added stream {stream.decode('utf-8')} to consumer group '{group}'")
+                refresh_counter += 1
+
+                # Skip if no streams to read from
+                if not stream_ids:
+                    await asyncio.sleep(0.1)
+                    continue
+
                 # Read from consumer group
                 result = await self._client.xreadgroup(
                     groupname=group,
@@ -361,6 +383,31 @@ class RedisMessageQueueBackend(QueueBackend):
             except Exception as e:
                 logger.error("Error reading from consumer group: %s", e)
                 await asyncio.sleep(1)
+
+    async def _ensure_consumer_group(self, stream: bytes, group: str) -> None:
+        """Ensure a consumer group exists for the given stream.
+
+        Args:
+            stream: Stream key
+            group: Consumer group name
+        """
+        if self._client is None:
+            raise RuntimeError("Redis client is not initialized")
+
+        try:
+            # Try to create the consumer group (read from beginning with ID "0")
+            await self._client.xgroup_create(
+                name=stream,
+                groupname=group,
+                id=b"0",  # Start from beginning
+                mkstream=True,  # Create stream if it doesn't exist
+            )
+            logger.info(f"Created consumer group '{group}' for stream '{stream.decode('utf-8')}'")
+        except Exception as e:
+            # Group might already exist, which is fine
+            error_msg = str(e).lower()
+            if "busygroup" not in error_msg and "exists" not in error_msg:
+                logger.warning(f"Error creating consumer group '{group}' for stream '{stream.decode('utf-8')}': {e}")
 
     async def _get_streams_by_pattern(self, pattern: str) -> list[bytes]:
         """Get all Redis keys matching the given pattern.
