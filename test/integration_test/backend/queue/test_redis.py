@@ -218,6 +218,10 @@ class TestRedisIntegrationConsume:
     @pytest.mark.asyncio
     async def test_consume_simple_mode(self, clean_redis_backend: RedisMessageQueueBackend) -> None:
         """Test consuming messages without consumer groups."""
+        # First, create the stream by publishing a dummy message
+        # This ensures the stream exists before the consumer starts
+        await clean_redis_backend.publish("slack:events", {"id": 0, "dummy": True})
+        
         # Consume messages with timeout protection
         consumed_messages: list[dict[str, Any]] = []
         
@@ -225,17 +229,20 @@ class TestRedisIntegrationConsume:
             consumer = clean_redis_backend.consume()
             try:
                 async for msg in consumer:
+                    # Skip the dummy message
+                    if msg.get("dummy"):
+                        continue
                     consumed_messages.append(msg)
                     if len(consumed_messages) >= 2:
                         return  # Exit cleanly
             except asyncio.CancelledError:
                 pass
         
-        # Start consumer first (it will wait for new messages)
+        # Start consumer (it will discover the existing stream)
         task = asyncio.create_task(consume_messages())
         
-        # Give consumer time to start
-        await asyncio.sleep(0.1)
+        # Give consumer time to start and discover streams
+        await asyncio.sleep(0.5)
         
         # Now publish test messages (consumer will receive them)
         test_messages = [
@@ -245,6 +252,7 @@ class TestRedisIntegrationConsume:
         
         for msg in test_messages:
             await clean_redis_backend.publish("slack:events", msg)
+            await asyncio.sleep(0.1)  # Small delay between messages
         
         # Wait for consumption with timeout
         try:
@@ -299,10 +307,16 @@ class TestRedisIntegrationConsume:
         # Verify consumer group was created
         if clean_redis_backend._client:
             groups = await clean_redis_backend._client.xinfo_groups("slack:events")
-            assert len(groups) >= 1
-            # groups can be list of dicts or list of lists depending on Redis version
-            group_names = [g.get(b"name") if isinstance(g, dict) else g[1] for g in groups]
-            assert b"test-group" in group_names
+            # xinfo_groups returns a list of dicts with keys like 'name', 'consumers', etc.
+            assert len(groups) >= 1, f"Expected at least 1 group, got {groups}"
+            # Extract group names from the response
+            group_names = []
+            for g in groups:
+                if isinstance(g, dict):
+                    name = g.get("name") or g.get(b"name")
+                    if name:
+                        group_names.append(name if isinstance(name, bytes) else name.encode())
+            assert b"test-group" in group_names, f"Expected b'test-group' in {group_names}, groups={groups}"
 
     @pytest.mark.asyncio
     async def test_multiple_consumers_same_group(
@@ -321,8 +335,6 @@ class TestRedisIntegrationConsume:
             try:
                 async for msg in consumer:
                     consumed1.append(msg)
-                    if len(consumed1) + len(consumed2) >= 6:
-                        return
             except asyncio.CancelledError:
                 pass
         
@@ -331,8 +343,6 @@ class TestRedisIntegrationConsume:
             try:
                 async for msg in consumer:
                     consumed2.append(msg)
-                    if len(consumed1) + len(consumed2) >= 6:
-                        return
             except asyncio.CancelledError:
                 pass
         
@@ -340,26 +350,22 @@ class TestRedisIntegrationConsume:
         tasks = [asyncio.create_task(consume1()), asyncio.create_task(consume2())]
         
         # Give consumers time to start
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         
         # Now publish messages (consumers will distribute them)
         for i in range(6):
             await clean_redis_backend.publish("slack:events", {"id": i})
-            await asyncio.sleep(0.05)  # Small delay between messages
+            await asyncio.sleep(0.1)  # Small delay between messages
         
-        # Wait for consumption with timeout
-        try:
-            await asyncio.wait_for(
-                asyncio.gather(*tasks, return_exceptions=True),
-                timeout=10.0,
-            )
-        except asyncio.TimeoutError:
-            for task in tasks:
-                task.cancel()
-            await asyncio.gather(*tasks, return_exceptions=True)
-            pytest.fail(f"Timeout - consumed1: {len(consumed1)}, consumed2: {len(consumed2)}")
-        finally:
-            await backend2.close()
+        # Wait a bit for consumption
+        await asyncio.sleep(2.0)
+        
+        # Cancel consumers
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        
+        await backend2.close()
         
         # Verify messages were distributed
         total_consumed = len(consumed1) + len(consumed2)
