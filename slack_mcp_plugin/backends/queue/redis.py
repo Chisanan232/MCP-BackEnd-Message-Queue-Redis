@@ -13,7 +13,6 @@ from typing import Any
 
 import redis.asyncio as aioredis
 from redis.asyncio.client import Redis
-
 from slack_mcp.backends.base.protocol import QueueBackend  # type: ignore[attr-defined]
 
 __all__ = ["RedisMessageQueueBackend"]
@@ -129,16 +128,17 @@ class RedisMessageQueueBackend(QueueBackend):
                 "max_connections": self._max_connections,
                 "decode_responses": False,
             }
-            
+
             # Add password if provided
             if self._password:
                 connection_kwargs["password"] = self._password
-            
+
             # Add SSL if enabled (use ssl_context for SSL connections)
             if self._ssl:
                 import ssl as ssl_module
+
                 connection_kwargs["ssl"] = ssl_module.create_default_context()
-            
+
             self._client = await aioredis.from_url(
                 self._redis_url,
                 **connection_kwargs,
@@ -279,7 +279,7 @@ class RedisMessageQueueBackend(QueueBackend):
                 )
 
                 logger.debug(f"xread result: {len(result) if result else 0} streams with messages")
-                
+
                 if result:
                     for stream_name, messages in result:
                         for message_id, fields in messages:
@@ -308,9 +308,7 @@ class RedisMessageQueueBackend(QueueBackend):
                 logger.error("Error during simple consumption: %s", e)
                 await asyncio.sleep(1)
 
-    async def _consume_with_group(
-        self, pattern: str, group: str, consumer_name: str
-    ) -> AsyncIterator[dict[str, Any]]:
+    async def _consume_with_group(self, pattern: str, group: str, consumer_name: str) -> AsyncIterator[dict[str, Any]]:
         """Consume messages using consumer groups.
 
         Args:
