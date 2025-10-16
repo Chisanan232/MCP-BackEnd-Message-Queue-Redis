@@ -22,16 +22,17 @@ By following this guide, you'll have:
 
 ### Step 1: Install Redis
 
-Start a Redis server using Docker:
+Install and start a Redis server using Docker (recommended) or native installation:
 
+**Using Docker (Recommended):**
 ```bash
 docker run -d --name redis-mcp -p 6379:6379 redis:7-alpine
 ```
 
-Or install Redis locally:
+**Or install natively:**
 - **macOS**: `brew install redis && brew services start redis`
 - **Ubuntu/Debian**: `sudo apt install redis-server && sudo systemctl start redis`
-- **Windows**: Use [Redis for Windows](https://github.com/microsoftarchive/redis/releases) or Docker
+- **Windows**: Use [Redis for Windows](https://github.com/microsoftarchive/redis/releases)
 
 ### Step 2: Install the Redis Backend
 
@@ -161,31 +162,21 @@ export REDIS_MAX_CONNECTIONS=20
 export REDIS_STREAM_MAXLEN=50000
 ```
 
-#### Docker Environment
-```bash
-export QUEUE_BACKEND=redis
-export REDIS_URL=redis://redis-container:6379/0
-```
 
 ## Running the Example
 
 The project includes a comprehensive example demonstrating all features:
-
 ```bash
 # Clone the repository (if contributing/developing)
 git clone https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis.git
 cd MCP-BackEnd-Message-Queue-Redis
 
-# Install dependencies
+# Install in editable mode
 pip install -e .
 
-# Start Redis
-docker run -d -p 6379:6379 redis:7-alpine
-
-# Run the example
+# Run the example (ensure Redis is running)
 python examples/basic_usage.py
 ```
-
 The example demonstrates:
 - Publishing messages to Redis streams
 - Simple consumption without consumer groups
@@ -198,7 +189,7 @@ Now that you have the basics:
 
 1. 📋 **[Requirements](./requirements)** - Detailed system requirements
 2. 🛠️ **[Installation](./installation)** - Advanced installation options
-3. 📚 **[API Reference](../api-references/)** - Complete API documentation
+3. 📚 **[API Reference](../api-references/api-references)** - Complete API documentation
 
 ## Troubleshooting
 

@@ -21,7 +21,7 @@ Before you begin contributing to the Redis Message Queue Backend, ensure your de
 - **Git**: Latest stable version
 - **uv**: Fast Python package manager (recommended) or pip
 - **Redis**: Version 6.0+ for testing (7.0+ recommended)
-- **Docker**: For running Redis in containers during testing
+- **Docker**: For running Redis in containers during testing (optional)
 
 ### Recommended Development Tools
 
@@ -112,6 +112,9 @@ cd MCP-BackEnd-Message-Queue-Redis
   <TabItem value="docker" label="Docker (Recommended)" default>
   ```bash
   docker run -d --name redis-dev -p 6379:6379 redis:7-alpine
+  
+  # Verify it's running
+  docker exec redis-dev redis-cli ping
   ```
   </TabItem>
   <TabItem value="local" label="Local Installation">
@@ -121,6 +124,9 @@ cd MCP-BackEnd-Message-Queue-Redis
   
   # Linux
   sudo systemctl start redis-server
+  
+  # Verify Redis is running
+  redis-cli ping  # Should return "PONG"
   ```
   </TabItem>
 </Tabs>

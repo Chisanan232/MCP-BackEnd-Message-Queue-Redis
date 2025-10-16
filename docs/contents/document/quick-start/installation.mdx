@@ -280,42 +280,6 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-### Docker Compose Setup
-
-For a complete development environment with Redis and your application:
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-  
-  app:
-    build: .
-    environment:
-      - QUEUE_BACKEND=redis
-      - REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - redis
-    volumes:
-      - .:/app
-
-volumes:
-  redis_data:
-```
-
-Start the environment:
-```bash
-docker-compose up -d
-```
-
 ### Production Deployment
 
 For production environments, consider:
@@ -405,7 +369,7 @@ python -c "import sys; print('\n'.join(sys.path))"
 Now that you have the Redis backend installed:
 
 1. 🚀 **[Quick Start Guide](./quick-start)** - Learn usage patterns and examples
-2. 📚 **[API Reference](../api-references/)** - Explore the complete API
-3. 🤝 **[Contributing](../contribute/)** - Help improve the Redis backend
+2. 📚 **[API Reference](../api-references/api-references)** - Explore the complete API
+3. 🤝 **[Contributing](../contribute/contribute)** - Help improve the Redis backend
 
 Ready to start using the Redis backend? Check out the [Quick Start Guide](./quick-start) for usage examples!

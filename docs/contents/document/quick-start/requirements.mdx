@@ -109,7 +109,6 @@ pip install slack-mcp-server
 ### Local Development
 - **Docker**: Easiest for development (recommended)
 - **Native Installation**: Direct installation on your OS
-- **Docker Compose**: For integrated testing with other services
 
 ### Production Options
 - **Self-Hosted Redis**: On your own servers
@@ -157,7 +156,7 @@ Once your environment meets these requirements, you're ready to:
 
 1. 🚀 **[Quick Start Guide](./quick-start)** - Get started in 5 minutes with usage examples
 2. 🛠️ **[Installation Guide](./installation)** - Detailed installation instructions
-3. 📚 **[API Reference](../api-references/)** - Complete API documentation
+3. 📚 **[API Reference](../api-references/api-references)** - Complete API documentation
 
 ## Common Issues & Solutions
 
@@ -174,14 +173,14 @@ python3.13 -m pip install be-component-loader-redis
 ps aux | grep redis
 
 # Start Redis if not running
+# Docker:
+docker start redis-mcp
+
 # macOS:
 brew services start redis
 
 # Linux:
 sudo systemctl start redis-server
-
-# Docker:
-docker start redis-mcp
 ```
 
 ### Permission Issues

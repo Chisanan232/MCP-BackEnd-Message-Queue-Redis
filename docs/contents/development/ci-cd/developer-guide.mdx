@@ -342,43 +342,10 @@ curl -s https://chisanan232.github.io/test-python-uv-project-template/docs/<VERS
 
 #### Version Consistency Verification
 All artifacts should reflect the same bumped version:
-- Verify Python package, both Docker registries, and docs use identical version tags
+- Verify Python package and docs use identical version tags
 - Cross-check that no artifacts still reference the old version (e.g., 0.0.0 vs 0.0.1)
 
 ## Additional CI Workflows
-
-### Docker CI
-
-[![docker-ci](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/docker-ci.yml)
-
-**Purpose**: Standalone Docker image building and functionality testing
-
-**Features**:
-- Independent Docker image testing
-- Multi-architecture build validation
-- Container functionality verification  
-- Performance and resource usage testing
-
-**Use Cases**:
-- Testing Docker changes without full release
-- Validating Dockerfile modifications
-- Performance regression testing
-
-### DockerHub README CI
-
-[![dockerhub-readme-ci](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/dockerhub-readme-ci.yml)
-
-**Purpose**: Updates the Docker Hub repository description automatically
-
-**Features**:
-- Synchronizes README content with Docker Hub
-- Maintains consistent documentation across platforms
-- Automatic updates on documentation changes
-
-**Benefits**:
-- Keeps Docker Hub page current with latest documentation
-- Reduces manual maintenance overhead
-- Ensures users see accurate information
 
 ### Documentation Auto-Approve & Auto-Merge
 
@@ -461,8 +428,6 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 - `rw_build_git-tag_and_create_github-release.yaml` - Git tagging and GitHub releases
 
 ### Specialized Workflows  
-- `docker-ci.yml` - Standalone Docker testing
-- `dockerhub-readme-ci.yml` - DockerHub README synchronization
 - `docs-automerge.yml` - Documentation PR automation
 
 ### Legacy Workflows
@@ -478,12 +443,9 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 ```bash
 # Run tests locally before submitting PR
 uv run pytest
-uv run mypy src/
-uv run ruff check src/
-
-# Test Docker build locally
-docker build -t test-image .
-docker run --rm test-image --version
+uv run mypy slack_mcp_plugin/
+uv run pylint slack_mcp_plugin/
+uv run black --check slack_mcp_plugin/ test/
 ```
 
 #### 2. CI/CD Integration
@@ -505,7 +467,6 @@ release: true
 level: auto  # Let commit messages determine bump level
 artifacts:
   python: auto  # Only publish if Python files changed
-  docker: auto  # Only publish if Docker files changed
   docs:
     mode: auto
     strategy: changed  # Only version changed doc sections

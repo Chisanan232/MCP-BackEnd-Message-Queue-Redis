@@ -209,23 +209,6 @@ export REDIS_SSL=true
 python your_consumer.py --group=workers
 ```
 
-### **Docker Compose Deployment**
-```yaml
-version: '3.8'
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-  
-  slack-mcp-server:
-    image: slack-mcp-server:latest
-    environment:
-      - QUEUE_BACKEND=redis
-      - REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - redis
-```
 
 ## Getting Started
 
