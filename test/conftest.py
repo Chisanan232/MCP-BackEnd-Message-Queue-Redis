@@ -7,10 +7,9 @@ and integration tests.
 import asyncio
 import logging
 import os
-from typing import AsyncGenerator, Generator
+from typing import Generator
 
 import pytest
-import pytest_asyncio
 from testcontainers.redis import RedisContainer
 
 # Configure logging for tests
@@ -125,16 +124,17 @@ def redis_container() -> Generator[RedisContainer, None, None]:
         # Wait for Redis to be ready
         client = container.get_client()
         client.ping()
-        
+
         host = container.get_container_host_ip()
         port = container.get_exposed_port(6379)
         logging.info("Redis container started: redis://%s:%s/0", host, port)
-        
+
         yield container
     finally:
         # Cleanup: stop and remove container
         container.stop()
         logging.info("Redis container stopped")
+
 
 @pytest.fixture(scope="session")
 def redis_connection_url(redis_container: RedisContainer) -> str:
