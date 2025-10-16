@@ -35,7 +35,8 @@ jobs:
       test_type: integration-test
       test_folder: './test/integration_test'
       python-versions: '["3.13"]'
-      operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
+      # Only run on Ubuntu - macOS doesn't have Docker available for Testcontainers
+      operating-systems: '["ubuntu-latest", "ubuntu-22.04"]'
 
 #  run_one_e2e-test:
 ##    name: Run all end-to-end test items under one case
