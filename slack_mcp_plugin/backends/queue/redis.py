@@ -13,7 +13,7 @@ from typing import Any
 
 import redis.asyncio as aioredis
 from redis.asyncio.client import Redis
-from slack_mcp.backends.base.protocol import QueueBackend  # type: ignore[attr-defined]
+from slack_mcp.backends.base.protocol import QueueBackend
 
 __all__ = ["RedisMessageQueueBackend"]
 
@@ -124,7 +124,7 @@ class RedisMessageQueueBackend(QueueBackend):
         """
         try:
             # Build connection kwargs
-            connection_kwargs = {
+            connection_kwargs: dict[str, Any] = {
                 "max_connections": self._max_connections,
                 "decode_responses": False,
             }
