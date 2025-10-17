@@ -6,112 +6,128 @@ sidebar_position: 1
 
 # Requirements
 
-Before developing a Slack MCP Server message queue plugin, ensure your development environment meets the following requirements:
+Before using the Redis message queue backend with Slack MCP Server, ensure your system meets the following requirements:
+
+## Quick Checklist
+
+- ✅ Python 3.12 or 3.13 installed
+- ✅ Redis 6.0+ running (7.0+ recommended)
+- ✅ pip or uv package manager
+- ✅ Network access to Redis server
+- ✅ 500MB+ free disk space
 
 ## System Requirements
 
 - **Operating System**: Linux, macOS, or Windows
-- **Memory**: Minimum 1GB RAM (2GB+ recommended for development)
-- **Disk Space**: Minimum 1GB for full development environment
-- **Internet Connection**: Required for downloading dependencies and testing with external queue services
+- **Memory**: Minimum 512MB RAM (2GB+ recommended for production)
+- **Disk Space**: Minimum 500MB for Redis and Python dependencies
+- **Internet Connection**: Required for installing packages and connecting to remote Redis instances
 
 ## Core Prerequisites
 
 ### Python Version
 
-- **Python**: Version 3.12 or higher (up to 3.13 supported)
-- **Recommended**: Python 3.13 for optimal compatibility with async features
+- **Python**: Version 3.12 or 3.13
+- **Recommended**: Python 3.13 for best async performance
 
 :::tip Python Installation
 If you don't have Python installed:
-- **macOS**: Use `brew install python` or download from [python.org](https://www.python.org/)
-- **Linux**: Use your package manager (e.g., `apt install python3.13`)
+- **macOS**: `brew install python@3.13`
+- **Ubuntu/Debian**: `sudo apt install python3.13`
 - **Windows**: Download from [python.org](https://www.python.org/) or use `winget install Python.Python.3.13`
 :::
 
-### Package Manager: uv (Required)
+### Package Manager
 
-This template is specifically designed for **[uv]** - a fast, modern Python package manager written in Rust.
+You can use any Python package manager:
 
-**Installation:**
+- **pip** (standard, included with Python)
+- **uv** (fast, modern alternative)
+- **poetry** (dependency management)
+
+**Installation with pip:**
 ```bash
-# macOS and Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Alternative: via pip
-pip install uv
+pip install be-component-loader-redis
 ```
 
-**Why uv?**
-- ⚡ **10-100x faster** than pip/poetry for dependency resolution
-- 🔒 **Deterministic builds** with lockfile support  
-- 🛠️ **All-in-one tool** for project management, virtual environments, and Python installation
-- 📦 **Drop-in replacement** for pip with better dependency resolution
+**Installation with uv (recommended for speed):**
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-[uv]: https://docs.astral.sh/uv/
+# Install the package
+uv pip install be-component-loader-redis
+```
 
-### Version Control
+### Redis Server
 
-- **Git**: Version 2.20 or higher
-- **GitHub Account**: For template creation and repository management (recommended)
+- **Redis**: Version 6.0 or higher (7.0+ recommended)
+- **Redis Streams**: Must support XADD, XREAD, XREADGROUP commands
+
+**Installation Options:**
+
+```bash
+# Docker (recommended for development)
+docker run -d --name redis-mcp -p 6379:6379 redis:7-alpine
+
+# macOS
+brew install redis
+brew services start redis
+
+# Ubuntu/Debian
+sudo apt install redis-server
+sudo systemctl start redis-server
+
+# Windows
+# Use Docker or download from https://github.com/microsoftarchive/redis/releases
+```
 
 ## Slack MCP Server Integration
 
-### Understanding the Slack MCP Server
+### Required Packages
 
-To develop message queue plugins, you should understand:
+The Redis backend requires:
 
-- **Slack MCP Server**: The main server that handles Slack events and webhook processing
-- **QueueBackend Protocol**: The interface your plugin must implement
-- **Plugin Discovery**: How the server finds and loads your queue backend
-
-### Development Dependencies
-
-Your plugin will integrate with:
-
-```toml
-# These are provided by the Slack MCP Server
-dependencies = [
-    "slack-mcp-server",  # Core server functionality
-]
+```bash
+pip install be-component-loader-redis
 ```
 
-## Message Queue Services (Optional)
+This automatically installs:
+- `redis[hiredis]>=6.4.0` - Redis client with high-performance parser
+- `slack-mcp>=0.0.1` - Slack MCP Server core (if not already installed)
 
-Depending on your queue backend implementation, you may need access to:
+### Optional: Slack MCP Server
 
-### Local Development Services
-- **Redis**: `brew install redis` (macOS) or `apt install redis-server` (Linux)
-- **RabbitMQ**: `brew install rabbitmq` (macOS) or `apt install rabbitmq-server` (Linux)
-- **Docker**: For containerized queue services
+If you're running the full Slack MCP Server:
 
-### Cloud Services
-- **AWS Account**: For SQS, SNS integration
-- **Google Cloud**: For Pub/Sub integration
-- **Azure Account**: For Service Bus integration
+```bash
+pip install slack-mcp-server
+```
 
-## Development Tools (Auto-configured)
+## Redis Deployment Options
 
-These tools are automatically set up in the template:
+### Local Development
+- **Docker**: Easiest for development (recommended)
+- **Native Installation**: Direct installation on your OS
 
-### Testing & Quality Assurance
-- **pytest**: Async-capable testing framework
-- **pytest-cov**: Code coverage reporting
-- **pytest-asyncio**: Async test support
-- **mypy**: Static type checking
-- **black**: Code formatting
-- **pylint**: Code linting
+### Production Options
+- **Self-Hosted Redis**: On your own servers
+- **Redis Cloud**: Managed Redis service
+- **AWS ElastiCache**: Redis on AWS
+- **Google Cloud Memorystore**: Redis on GCP
+- **Azure Cache for Redis**: Redis on Azure
+- **DigitalOcean Managed Redis**: Redis on DigitalOcean
 
-### Documentation
-- **Docusaurus**: Documentation site generation
-- **API documentation**: Auto-generated from docstrings
+## Optional Tools
 
-### CI/CD
-- **GitHub Actions**: Automated testing and publishing
-- **Pre-commit hooks**: Code quality enforcement
+### For Development & Testing
+- **redis-cli**: Command-line Redis client (included with Redis)
+- **RedisInsight**: GUI for Redis (optional, helpful for debugging)
+
+### For Monitoring
+- **redis-cli**: Built-in monitoring commands
+- **Prometheus**: Metrics collection
+- **Grafana**: Metrics visualization
 
 ## Environment Setup Verification
 
@@ -119,50 +135,71 @@ After installing the prerequisites, verify your setup:
 
 ```bash
 # Check Python version
-python --version  # Should be 3.12+
+python --version  # Should be 3.12 or 3.13
 
-# Check uv installation
-uv --version  # Should show uv version
+# Check Redis is running
+redis-cli ping  # Should return "PONG"
 
-# Check Git
-git --version  # Should be 2.20+
+# Check Redis version
+redis-cli INFO server | grep redis_version
 
-# Verify you can create virtual environments
-uv venv test-env
-source test-env/bin/activate  # Linux/macOS
-# or test-env\Scripts\activate  # Windows
-deactivate
-rm -rf test-env
+# Verify package installation
+pip show be-component-loader-redis
+
+# Test Redis connection from Python
+python -c "import redis; r = redis.Redis(); print(r.ping())"
 ```
 
 ## Next Steps
 
 Once your environment meets these requirements, you're ready to:
 
-1. 📋 **[Install the template](./installation)** - Clone and set up your plugin project
-2. 🔧 **[Implement your backend](./how-to-run)** - Build your message queue logic
-3. 🧪 **Test your plugin** - Validate integration with Slack MCP Server
-4. 🚀 **Publish your package** - Share with the community
+1. 🚀 **[Quick Start Guide](./quick-start)** - Get started in 5 minutes with usage examples
+2. 🛠️ **[Installation Guide](./installation)** - Detailed installation instructions
+3. 📚 **[API Reference](../api-references/api-references)** - Complete API documentation
 
 ## Common Issues & Solutions
 
 ### Python Version Issues
 ```bash
-# If you have multiple Python versions
-uv python install 3.13
-uv python pin 3.13
+# If you have multiple Python versions, specify the version
+python3.13 -m pip install be-component-loader-redis
 ```
 
-### uv Installation Issues
+### Redis Connection Issues
 ```bash
-# If uv command not found after installation
-source ~/.bashrc  # or restart terminal
+# If Redis is not responding
+# Check if Redis is running
+ps aux | grep redis
+
+# Start Redis if not running
+# Docker:
+docker start redis-mcp
+
+# macOS:
+brew services start redis
+
+# Linux:
+sudo systemctl start redis-server
 ```
 
 ### Permission Issues
 ```bash
-# If you get permission errors
-uv venv --system-site-packages
+# If you get permission errors during pip install
+pip install --user be-component-loader-redis
+
+# Or use a virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+pip install be-component-loader-redis
 ```
 
-Ready to proceed? Let's move on to [installation](./installation)!
+### Redis Streams Not Available
+```bash
+# Verify Redis version supports Streams (6.0+)
+redis-cli INFO server | grep redis_version
+
+# If version is too old, upgrade Redis
+```
+
+Ready to proceed? Let's move on to the [Quick Start Guide](./quick-start)!

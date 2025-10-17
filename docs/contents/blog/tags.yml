@@ -18,22 +18,22 @@ message-queue:
   permalink: /message-queue
   description: Message queue systems, backends, and processing patterns
 
-plugin:
-  label: Plugin
-  permalink: /plugin
-  description: Plugin development, architecture, and best practices
+redis:
+  label: Redis
+  permalink: /redis
+  description: Redis integration, Redis Streams, and message processing
 
-template:
-  label: Template
-  permalink: /template
-  description: Project templates, boilerplates, and starter kits
+backend:
+  label: Backend
+  permalink: /backend
+  description: Backend components, implementations, and architecture
 
 python:
   label: Python
   permalink: /python
   description: Python programming and development
 
-developer-experience:
-  label: Developer Experience
-  permalink: /developer-experience
-  description: Tools and practices that improve developer productivity and happiness
+plugin-architecture:
+  label: Plugin Architecture
+  permalink: /plugin-architecture
+  description: Component-based architectures and plugin systems

@@ -11,7 +11,7 @@ import TOCInline from '@theme/TOCInline';
 ![Multi-Target](https://img.shields.io/badge/Deployment-Multi--Target-blue?style=for-the-badge)
 ![Security](https://img.shields.io/badge/Security-SLSA%20%7C%20SBOM%20%7C%20Cosign-red?style=for-the-badge)
 
-The test-python-uv-project-template uses a comprehensive, intent-driven release system that supports multi-target deployments with full supply chain security. The system provides production, validation, and staging workflows for safe and reliable releases.
+The Redis Message Queue Backend uses a comprehensive, intent-driven release system that supports multi-target deployments with full supply chain security. The system provides production, validation, and staging workflows for safe and reliable releases.
 
 <TOCInline toc={toc} />
 
@@ -30,7 +30,7 @@ The release system follows modern DevOps practices with:
 
 ### 1. Production Release Workflow (`release.yml`)
 
-[![Release](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml)
+[![Release](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release.yml)
 
 **Purpose**: Production releases to PyPI, Docker registries, and documentation deployment
 
@@ -143,7 +143,7 @@ intent:
 
 ### 2. Release Validation Workflow (`release-validate.yml`)
 
-[![Release Validation](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml)
+[![Release Validation](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release-validate.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release-validate.yml)
 
 **Purpose**: Pre-release validation without publishing artifacts
 
@@ -209,7 +209,7 @@ intent-parse:
 
 ### 3. Staging Release Workflow (`release-staging.yml`)
 
-[![Release Staging](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml)
+[![Release Staging](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release-staging.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release-staging.yml)
 
 **Purpose**: Deploy to staging environments for testing with enhanced config-based customization
 

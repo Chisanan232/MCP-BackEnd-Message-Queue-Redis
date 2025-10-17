@@ -11,7 +11,7 @@ import TOCInline from '@theme/TOCInline';
 ![Best Practices](https://img.shields.io/badge/Guide-Best%20Practices-green?style=for-the-badge)
 ![Specialized Workflows](https://img.shields.io/badge/Workflows-Specialized-orange?style=for-the-badge)
 
-This guide provides comprehensive information for developers working with the Python uv template project CI/CD system, including troubleshooting, configuration management, specialized workflows, and best practices.
+This guide provides comprehensive information for developers working with the Redis Message Queue Backend CI/CD system, including troubleshooting, configuration management, specialized workflows, and best practices.
 
 <TOCInline toc={toc} />
 
@@ -280,8 +280,8 @@ gh run view <run-id> --log | grep -E "(image-tag|docker tag)"
 ### Release Status Monitoring
 
 **Primary Workflows**:
-- [Release Workflow](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml)
-- [Validation Results](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml)
+- [Release Workflow](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release.yml)
+- [Validation Results](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/release-validate.yml)
 
 **CLI Monitoring**:
 ```bash
@@ -342,47 +342,14 @@ curl -s https://chisanan232.github.io/test-python-uv-project-template/docs/<VERS
 
 #### Version Consistency Verification
 All artifacts should reflect the same bumped version:
-- Verify Python package, both Docker registries, and docs use identical version tags
+- Verify Python package and docs use identical version tags
 - Cross-check that no artifacts still reference the old version (e.g., 0.0.0 vs 0.0.1)
 
 ## Additional CI Workflows
 
-### Docker CI
-
-[![docker-ci](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml)
-
-**Purpose**: Standalone Docker image building and functionality testing
-
-**Features**:
-- Independent Docker image testing
-- Multi-architecture build validation
-- Container functionality verification  
-- Performance and resource usage testing
-
-**Use Cases**:
-- Testing Docker changes without full release
-- Validating Dockerfile modifications
-- Performance regression testing
-
-### DockerHub README CI
-
-[![dockerhub-readme-ci](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml)
-
-**Purpose**: Updates the Docker Hub repository description automatically
-
-**Features**:
-- Synchronizes README content with Docker Hub
-- Maintains consistent documentation across platforms
-- Automatic updates on documentation changes
-
-**Benefits**:
-- Keeps Docker Hub page current with latest documentation
-- Reduces manual maintenance overhead
-- Ensures users see accurate information
-
 ### Documentation Auto-Approve & Auto-Merge
 
-[![docs-automerge](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-automerge.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-automerge.yml)
+[![docs-automerge](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/docs-automerge.yml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/docs-automerge.yml)
 
 **Purpose**: Streamlines documentation-only pull request processing
 
@@ -433,7 +400,7 @@ graph TD
 The following describes the legacy CD system (`cd.yaml`) which is maintained for backward compatibility but superseded by the release system above.
 :::
 
-[![CD](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/cd.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/cd.yaml)
+[![CD](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/cd.yaml/badge.svg)](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/actions/workflows/cd.yaml)
 
 **Purpose**: Legacy CD workflow for backward compatibility
 
@@ -461,14 +428,12 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 - `rw_build_git-tag_and_create_github-release.yaml` - Git tagging and GitHub releases
 
 ### Specialized Workflows  
-- `docker-ci.yml` - Standalone Docker testing
-- `dockerhub-readme-ci.yml` - DockerHub README synchronization
 - `docs-automerge.yml` - Documentation PR automation
 
 ### Legacy Workflows
 - `cd.yaml` - Legacy continuous deployment (backward compatibility)
 
-**Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/Template-Python-UV-Project/tree/master/.github/workflows)
+**Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/tree/master/.github/workflows)
 
 ## Best Practices for Contributors
 
@@ -478,12 +443,9 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 ```bash
 # Run tests locally before submitting PR
 uv run pytest
-uv run mypy src/
-uv run ruff check src/
-
-# Test Docker build locally
-docker build -t test-image .
-docker run --rm test-image --version
+uv run mypy slack_mcp_plugin/
+uv run pylint slack_mcp_plugin/
+uv run black --check slack_mcp_plugin/ test/
 ```
 
 #### 2. CI/CD Integration
@@ -505,7 +467,6 @@ release: true
 level: auto  # Let commit messages determine bump level
 artifacts:
   python: auto  # Only publish if Python files changed
-  docker: auto  # Only publish if Docker files changed
   docs:
     mode: auto
     strategy: changed  # Only version changed doc sections

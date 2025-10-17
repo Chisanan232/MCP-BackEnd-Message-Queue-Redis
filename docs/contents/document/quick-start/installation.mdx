@@ -9,301 +9,367 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 ```
 
-# Creating Your Slack MCP Server Message Queue Plugin
+# Installing Redis Message Queue Backend
 
-This guide provides step-by-step instructions for setting up your message queue plugin project using this template.
+This guide provides step-by-step instructions for installing and configuring the Redis message queue backend for Slack MCP Server.
 
-## Method 1: Using GitHub Template (Recommended)
+## Step 1: Install Redis Server
 
-### Step 1: Create Repository from Template
-
-1. Navigate to the [Slack MCP Server MQ Template repository](https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template)
-2. Click the **"Use this template"** button (green button)
-3. Select **"Create a new repository"**
-4. Configure your new repository:
-   - **Repository name**: `slack-mcp-<your-queue-name>-backend` (e.g., `slack-mcp-redis-backend`)
-   - **Description**: `Message queue backend plugin for Slack MCP Server using <Your Queue Service>`
-   - **Visibility**: Choose Public (recommended for community plugins) or Private
-   - **Include all branches**: Leave unchecked
-
-### Step 2: Clone Your New Repository
-
-```bash
-git clone https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend.git
-cd slack-mcp-YOUR-QUEUE-backend
-```
-
-## Method 2: Manual Setup
-
-### Step 1: Download or Clone Template
+First, you need a running Redis server. Choose the method that best fits your environment:
 
 <Tabs>
-<TabItem value="git-clone" label="Git Clone">
+<TabItem value="docker" label="Docker (Recommended)" default>
 
 ```bash
-git clone https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template.git slack-mcp-your-queue-backend
-cd slack-mcp-your-queue-backend
-rm -rf .git  # Remove template's git history
-git init     # Initialize new git repository
+# Pull and run Redis 7
+docker run -d \
+  --name redis-mcp \
+  -p 6379:6379 \
+  redis:7-alpine
+
+# Verify it's running
+docker ps | grep redis-mcp
+
+# Test connection
+docker exec redis-mcp redis-cli ping
 ```
 
 </TabItem>
-<TabItem value="download" label="Download ZIP">
-
-1. Download the template as a ZIP file from GitHub
-2. Extract to your desired directory
-3. Rename the folder to your project name
-4. Initialize a new git repository:
+<TabItem value="macos" label="macOS">
 
 ```bash
-cd your-project-directory
-git init
+# Install Redis using Homebrew
+brew install redis
+
+# Start Redis service
+brew services start redis
+
+# Verify it's running
+redis-cli ping  # Should return "PONG"
+```
+
+</TabItem>
+<TabItem value="ubuntu" label="Ubuntu/Debian">
+
+```bash
+# Update package list
+sudo apt update
+
+# Install Redis
+sudo apt install redis-server
+
+# Start Redis service
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# Verify it's running
+redis-cli ping  # Should return "PONG"
+```
+
+</TabItem>
+<TabItem value="windows" label="Windows">
+
+**Option 1: Docker (Recommended)**
+```powershell
+docker run -d --name redis-mcp -p 6379:6379 redis:7-alpine
+```
+
+**Option 2: Native Installation**
+1. Download Redis from [GitHub Releases](https://github.com/microsoftarchive/redis/releases)
+2. Extract and run `redis-server.exe`
+3. Test with `redis-cli.exe ping`
+
+</TabItem>
+</Tabs>
+
+## Step 2: Install Python Package
+
+Install the Redis backend package using your preferred package manager:
+
+<Tabs>
+<TabItem value="pip" label="pip" default>
+
+```bash
+# Install from PyPI
+pip install be-component-loader-redis
+
+# Verify installation
+pip show be-component-loader-redis
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install the package
+uv pip install be-component-loader-redis
+
+# Verify installation
+uv pip show be-component-loader-redis
+```
+
+</TabItem>
+<TabItem value="poetry" label="poetry">
+
+```bash
+# Add to your project
+poetry add be-component-loader-redis
+
+# Verify installation
+poetry show be-component-loader-redis
 ```
 
 </TabItem>
 </Tabs>
 
-## Step 3: Project Customization
+## Step 3: Configure Environment Variables
 
-### Update Project Metadata
+Set up the required environment variables for the Redis backend:
 
-Edit `pyproject.toml` to customize your plugin:
-
-```toml
-[project]
-name = "slack-mcp-YOUR-QUEUE-backend"  # Replace YOUR-QUEUE
-version = "0.1.0"
-description = "📮 A YOUR-QUEUE message queue backend plugin for Slack MCP Server."
-authors = [{ name = "Your Name", email = "your.email@example.com" }]
-
-# Update URLs to your repository
-[project.urls]
-Homepage = "https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend"
-Repository = "https://github.com/YOUR-USERNAME/slack-mcp-YOUR-QUEUE-backend"
-Documentation = "https://YOUR-USERNAME.github.io/slack-mcp-YOUR-QUEUE-backend/"
-
-# Configure your plugin entry point
-[project.entry-points."slack_mcp.backends.queue"]
-your_queue_name = "slack_mcp.backends.queue.your_queue:YourQueueBackend"
-```
-
-### Rename Source Files
-
-Update the source file structure to match your queue implementation:
+<Tabs>
+<TabItem value="bash" label="Bash/Zsh" default>
 
 ```bash
-# Rename the main implementation file
-mv src/memory.py src/your_queue.py
+# Required: Set backend type
+export QUEUE_BACKEND=redis
 
-# Update the module structure if needed
-mkdir -p src/slack_mcp/backends/queue/
-mv src/your_queue.py src/slack_mcp/backends/queue/
+# Required: Redis connection URL
+export REDIS_URL=redis://localhost:6379/0
+
+# Optional: Redis password (if authentication is enabled)
+export REDIS_PASSWORD=your_password
+
+# Optional: Enable SSL/TLS
+export REDIS_SSL=true
+
+# Optional: Connection pool size
+export REDIS_MAX_CONNECTIONS=10
+
+# Optional: Stream max length
+export REDIS_STREAM_MAXLEN=10000
 ```
 
-### Update Documentation
+**Persist in ~/.bashrc or ~/.zshrc:**
+```bash
+echo 'export QUEUE_BACKEND=redis' >> ~/.bashrc
+echo 'export REDIS_URL=redis://localhost:6379/0' >> ~/.bashrc
+source ~/.bashrc
+```
 
-1. **README.md**: Replace template content with your queue-specific information
-2. **Documentation**: Update docs in `docs/contents/document/` with your implementation details
-3. **Changelog**: Document your initial version in `docs/contents/document/changelog.mdx`
+</TabItem>
+<TabItem value="fish" label="Fish">
 
-## Step 4: Development Environment Setup
+```fish
+# Required
+set -x QUEUE_BACKEND redis
+set -x REDIS_URL redis://localhost:6379/0
 
-### Initialize the Project
+# Optional
+set -x REDIS_PASSWORD your_password
+set -x REDIS_SSL true
+```
+
+**Persist in ~/.config/fish/config.fish:**
+```fish
+echo 'set -x QUEUE_BACKEND redis' >> ~/.config/fish/config.fish
+echo 'set -x REDIS_URL redis://localhost:6379/0' >> ~/.config/fish/config.fish
+```
+
+</TabItem>
+<TabItem value="windows" label="Windows PowerShell">
+
+```powershell
+# Required
+$env:QUEUE_BACKEND = "redis"
+$env:REDIS_URL = "redis://localhost:6379/0"
+
+# Optional
+$env:REDIS_PASSWORD = "your_password"
+$env:REDIS_SSL = "true"
+```
+
+**Persist (run as Administrator):**
+```powershell
+[System.Environment]::SetEnvironmentVariable("QUEUE_BACKEND", "redis", "User")
+[System.Environment]::SetEnvironmentVariable("REDIS_URL", "redis://localhost:6379/0", "User")
+```
+
+</TabItem>
+<TabItem value="dotenv" label=".env File">
+
+Create a `.env` file in your project root:
 
 ```bash
-# Create virtual environment and install dependencies
-uv sync
-
-# Activate the virtual environment
-source .venv/bin/activate  # Linux/macOS
-# or .venv\Scripts\activate  # Windows
+# .env
+QUEUE_BACKEND=redis
+REDIS_URL=redis://localhost:6379/0
+REDIS_PASSWORD=your_password
+REDIS_SSL=false
+REDIS_MAX_CONNECTIONS=10
+REDIS_STREAM_MAXLEN=10000
 ```
 
-### Install Development Dependencies
-
-```bash
-# Install all development dependencies
-uv sync --group dev
-
-# Install pre-commit hooks
-uv run pre-commit install
+Load it in your Python code:
+```python
+from dotenv import load_dotenv
+load_dotenv()
 ```
 
-### Verify Installation
+</TabItem>
+</Tabs>
 
-```bash
-# Run tests to ensure everything is working
-uv run pytest
+## Step 4: Verify Installation
 
-# Check code quality
-uv run black --check .
-uv run pylint src/
-uv run mypy src/
-```
-
-## Step 5: Implement Your Queue Backend
-
-### Basic Implementation Structure
-
-Replace the template implementation in your main source file:
+Test that everything is working correctly:
 
 ```python
-"""
-Your Queue Backend Implementation
+# test_redis_backend.py
+import asyncio
+from slack_mcp_plugin.backends.queue import RedisMessageQueueBackend
 
-This module provides a YOUR-QUEUE implementation of the QueueBackend protocol
-for the Slack MCP Server.
-"""
-
-import os
-from typing import Any, AsyncIterator, Dict
-from slack_mcp_plugin.backends.base.protocol import QueueBackend
-
-
-class YourQueueBackend(QueueBackend):
-    """YOUR-QUEUE implementation of QueueBackend."""
-
-    def __init__(self, connection_url: str):
-        """Initialize the YOUR-QUEUE backend.
-        
-        Args:
-            connection_url: Connection string for YOUR-QUEUE service
-        """
-        self.connection_url = connection_url
-        # Initialize your queue client here
-
-    @classmethod
-    def from_env(cls) -> "YourQueueBackend":
-        """Create instance from environment variables.
-        
-        Expected environment variables:
-        - YOUR_QUEUE_URL: Connection URL for YOUR-QUEUE service
-        
-        Returns:
-            Configured YourQueueBackend instance
-        """
-        connection_url = os.environ.get("YOUR_QUEUE_URL", "default://localhost")
-        return cls(connection_url)
-
-    async def publish(self, key: str, payload: Dict[str, Any]) -> None:
-        """Publish a message to YOUR-QUEUE."""
-        # Implement your publish logic here
-        pass
-
-    async def consume(self, key: str) -> AsyncIterator[Dict[str, Any]]:
-        """Consume messages from YOUR-QUEUE."""
-        # Implement your consume logic here
-        while True:
-            # Yield messages as they arrive
-            yield {}
-```
-
-## Step 6: Configuration Examples
-
-### Environment Variables
-
-Create example configuration for users:
-
-```bash
-# .env.example
-YOUR_QUEUE_URL=redis://localhost:6379/0
-YOUR_QUEUE_PASSWORD=optional_password
-YOUR_QUEUE_SSL=false
-QUEUE_BACKEND=your_queue_name
-```
-
-### Docker Compose (Optional)
-
-If your queue service can run in Docker, provide a `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-services:
-  your-queue:
-    image: your-queue:latest
-    ports:
-      - "6379:6379"  # Adjust port as needed
-    environment:
-      - YOUR_QUEUE_CONFIG=value
-```
-
-## Step 7: Testing Your Implementation
-
-### Write Tests
-
-Create tests in `test/unit_test/` for your implementation:
-
-```python
-import pytest
-from your_module import YourQueueBackend
-
-@pytest.mark.asyncio
-async def test_publish_consume():
-    """Test basic publish/consume functionality."""
-    backend = YourQueueBackend.from_env()
+async def test_connection():
+    # Create backend from environment
+    backend = RedisMessageQueueBackend.from_env()
     
-    # Test publishing
-    await backend.publish("test-key", {"message": "hello"})
+    # Test publish
+    await backend.publish("slack:test", {"message": "Hello Redis!"})
+    print("✅ Successfully published message")
     
-    # Test consuming
-    async for message in backend.consume("test-key"):
-        assert message["message"] == "hello"
+    # Test consume
+    async for message in backend.consume():
+        print(f"✅ Successfully consumed message: {message}")
         break
+    
+    await backend.close()
+    print("✅ Connection closed successfully")
+
+if __name__ == "__main__":
+    asyncio.run(test_connection())
 ```
 
-### Run Tests
+Run the test:
+```bash
+python test_redis_backend.py
+```
+
+Expected output:
+```
+✅ Successfully published message
+✅ Successfully consumed message: {'message': 'Hello Redis!'}
+✅ Connection closed successfully
+```
+
+## Advanced Installation Options
+
+### Installing from Source (For Development)
+
+If you want to contribute or modify the Redis backend:
 
 ```bash
-# Run all tests
-uv run pytest
+# Clone the repository
+git clone https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis.git
+cd MCP-BackEnd-Message-Queue-Redis
 
-# Run with coverage
-uv run pytest --cov=src --cov-report=html
+# Install in editable mode
+pip install -e .
+
+# Or with development dependencies
+pip install -e ".[dev]"
 ```
 
-## Step 8: Documentation Setup
+### Production Deployment
 
-### Build Documentation
+For production environments, consider:
 
+1. **Redis Configuration**:
+   ```bash
+   # Enable persistence
+   redis-server --appendonly yes --appendfsync everysec
+   
+   # Set password
+   redis-server --requirepass your_secure_password
+   ```
+
+2. **Environment Variables**:
+   ```bash
+   export REDIS_URL=redis://prod-redis.example.com:6379/0
+   export REDIS_PASSWORD=your_secure_password
+   export REDIS_SSL=true
+   export REDIS_MAX_CONNECTIONS=50
+   export REDIS_STREAM_MAXLEN=100000
+   ```
+
+3. **Monitoring**:
+   ```bash
+   # Monitor Redis performance
+   redis-cli --stat
+   
+   # Check stream info
+   redis-cli XINFO STREAM slack:events
+   ```
+
+## Troubleshooting Installation
+
+### Package Installation Fails
+
+**Problem**: `pip install` fails with dependency errors
+
+**Solution**:
 ```bash
-cd docs
-npm install  # or pnpm install
-npm run build
+# Upgrade pip
+python -m pip install --upgrade pip
+
+# Try installing with --no-cache-dir
+pip install --no-cache-dir be-component-loader-redis
+
+# Or use a virtual environment
+python -m venv venv
+source venv/bin/activate
+pip install be-component-loader-redis
 ```
 
-### Update Documentation Content
+### Redis Connection Refused
 
-1. Edit `docs/contents/document/introduction.mdx` with your queue-specific details
-2. Add configuration examples in `docs/contents/document/quick-start/`
-3. Include API documentation for your implementation
+**Problem**: `ConnectionError: Error connecting to Redis`
+
+**Solutions**:
+```bash
+# Check if Redis is running
+redis-cli ping
+
+# Check Redis port
+netstat -an | grep 6379
+
+# Verify REDIS_URL format
+echo $REDIS_URL  # Should be redis://host:port/db
+
+# Test connection manually
+redis-cli -h localhost -p 6379 ping
+```
+
+### Import Errors
+
+**Problem**: `ModuleNotFoundError: No module named 'slack_mcp_plugin'`
+
+**Solution**:
+```bash
+# Reinstall the package
+pip uninstall be-component-loader-redis
+pip install be-component-loader-redis
+
+# Verify Python path
+python -c "import sys; print('\n'.join(sys.path))"
+```
 
 ## Next Steps
 
-Now that your project is set up:
+Now that you have the Redis backend installed:
 
-1. 🔧 **[Implement your queue logic](./how-to-run)** - Build the core functionality
-2. 🧪 **Test your implementation** - Ensure reliability and performance
-3. 📚 **Document your plugin** - Help users understand how to use it
-4. 🚀 **Publish your package** - Share with the Slack MCP Server community
+1. 🚀 **[Quick Start Guide](./quick-start)** - Learn usage patterns and examples
+2. 📚 **[API Reference](../api-references/api-references)** - Explore the complete API
+3. 🤝 **[Contributing](../contribute/contribute)** - Help improve the Redis backend
 
-## Common Setup Issues
-
-### Import Errors
-```bash
-# If you get import errors
-uv sync --reinstall
-```
-
-### Pre-commit Hook Failures
-```bash
-# If pre-commit hooks fail
-uv run pre-commit run --all-files
-```
-
-### Test Failures
-```bash
-# If tests fail due to missing dependencies
-uv add --group dev your-missing-dependency
-```
-
-Ready to start implementing? Head to the [implementation guide](./how-to-run)!
+Ready to start using the Redis backend? Check out the [Quick Start Guide](./quick-start) for usage examples!
