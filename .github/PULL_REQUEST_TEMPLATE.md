@@ -39,10 +39,9 @@
 * Scopes:
     * [ ] ✍️ Command line interface
     * [ ] 💼 Core feature
-        * [ ] 🕸️ Web server
-        * [ ] 🤖 MCP server
-        * [ ] 🪡 API client
-        * [ ] 🫀 Data model
+        * [ ] Produce
+        * [ ] Consume
+        * [ ] Other
     * [ ] 🎨 UI/UX (maybe command line interface, etc.)
     * [ ] ⛑️ Error handling
     * [ ] 🧪 Testing
