@@ -47,7 +47,7 @@ You can use any Python package manager:
 
 **Installation with pip:**
 ```bash
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 **Installation with uv (recommended for speed):**
@@ -56,7 +56,7 @@ pip install be-component-loader-redis
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install the package
-uv pip install be-component-loader-redis
+uv pip install abe-redis
 ```
 
 ### Redis Server
@@ -89,7 +89,7 @@ sudo systemctl start redis-server
 The Redis backend requires:
 
 ```bash
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 This automatically installs:
@@ -144,7 +144,7 @@ redis-cli ping  # Should return "PONG"
 redis-cli INFO server | grep redis_version
 
 # Verify package installation
-pip show be-component-loader-redis
+pip show abe-redis
 
 # Test Redis connection from Python
 python -c "import redis; r = redis.Redis(); print(r.ping())"
@@ -163,7 +163,7 @@ Once your environment meets these requirements, you're ready to:
 ### Python Version Issues
 ```bash
 # If you have multiple Python versions, specify the version
-python3.13 -m pip install be-component-loader-redis
+python3.13 -m pip install abe-redis
 ```
 
 ### Redis Connection Issues
@@ -186,12 +186,12 @@ sudo systemctl start redis-server
 ### Permission Issues
 ```bash
 # If you get permission errors during pip install
-pip install --user be-component-loader-redis
+pip install --user abe-redis
 
 # Or use a virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux/macOS
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 ### Redis Streams Not Available

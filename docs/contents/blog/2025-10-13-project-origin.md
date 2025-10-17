@@ -75,7 +75,7 @@ This Redis backend is designed to work seamlessly with projects using dynamic co
 ### **With Redis Backend**
 ```bash
 # Install the Redis backend
-pip install be-component-loader-redis
+pip install abe-redis
 
 # Start Redis (Docker recommended)
 docker run -d -p 6379:6379 redis:7-alpine

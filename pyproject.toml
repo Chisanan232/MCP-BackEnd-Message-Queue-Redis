@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "be-component-loader-redis"
+name = "abe-redis"
 version = "0.0.0"
-description = "📮 A Redis-based message queue backend component loader for Slack MCP server."
+description = "📮 A Redis-based abstracted backend (abe) for Slack MCP server message queue."
 authors = [{ name = "Chisanan232", email = "chi10211201@cycu.org.tw" }]
 requires-python = ">=3.12,<3.14"
 readme = "README.md"

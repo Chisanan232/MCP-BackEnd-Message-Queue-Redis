@@ -23,20 +23,20 @@ A production-ready Redis Streams-based message queue backend implementation for 
 [![Type Checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
 
 ### Package Info
-[![PyPI version](https://badge.fury.io/py/be-component-loader-redis.svg)](https://badge.fury.io/py/be-component-loader-redis)
-[![Supported Versions](https://img.shields.io/pypi/pyversions/be-component-loader-redis.svg?logo=python&logoColor=FBE072)](https://pypi.org/project/be-component-loader-redis)
+[![PyPI version](https://badge.fury.io/py/abe-redis.svg)](https://badge.fury.io/py/abe-redis)
+[![Supported Versions](https://img.shields.io/pypi/pyversions/abe-redis.svg?logo=python&logoColor=FBE072)](https://pypi.org/project/abe-redis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ### Downloads
-[![Downloads](https://pepy.tech/badge/be-component-loader-redis)](https://pepy.tech/project/be-component-loader-redis)
-[![Downloads/Month](https://pepy.tech/badge/be-component-loader-redis/month)](https://pepy.tech/project/be-component-loader-redis)
-[![Downloads/Week](https://pepy.tech/badge/be-component-loader-redis/week)](https://pepy.tech/project/be-component-loader-redis)
+[![Downloads](https://pepy.tech/badge/abe-redis)](https://pepy.tech/project/abe-redis)
+[![Downloads/Month](https://pepy.tech/badge/abe-redis/month)](https://pepy.tech/project/abe-redis)
+[![Downloads/Week](https://pepy.tech/badge/abe-redis/week)](https://pepy.tech/project/abe-redis)
 
 ---
 
 ## Overview
 
-**be-component-loader-redis** is a Redis Streams-based message queue backend that integrates seamlessly with the Slack MCP Server's component loading mechanism. It provides a reliable, scalable solution for handling Slack events using Redis as the message queue infrastructure.
+**abe-redis** is a Redis Streams-based message queue backend that integrates seamlessly with the Slack MCP Server's component loading mechanism. It provides a reliable, scalable solution for handling Slack events using Redis as the message queue infrastructure.
 
 ### Key Features
 
@@ -60,7 +60,7 @@ Python 3.12, 3.13
 Install the package via pip:
 
 ```bash
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 ### Configuration
@@ -213,7 +213,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## Links
 
 - **Documentation**: https://chisanan232.github.io/MCP-BackEnd-Message-Queue-Redis/
-- **PyPI Package**: https://pypi.org/project/be-component-loader-redis/
+- **PyPI Package**: https://pypi.org/project/abe-redis/
 - **Source Code**: https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis
 - **Issue Tracker**: https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/issues
 - **Slack MCP Server**: https://github.com/Chisanan232/slack-mcp-server

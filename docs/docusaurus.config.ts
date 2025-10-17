@@ -5,8 +5,8 @@ import remarkGfm from 'remark-gfm';
 import remarkMdxCodeMeta from 'remark-mdx-code-meta';
 
 const config: Config = {
-  title: 'be-component-loader-redis',
-  tagline: '🐍 A Redis-based message queue backend component loader for Slack MCP server.',
+  title: 'abe-redis',
+  tagline: '🐍 A Redis-based abstracted backend (abe) for Slack MCP server message queue.',
   favicon: 'img/python_logo_icon.png',
 
   // Set the production url of your site here
@@ -120,7 +120,7 @@ const config: Config = {
         // Options for docusaurus-search-local
         hashed: true,
         language: ['en'],
-        docsRouteBasePath: ['/be-component-loader-redis'],
+        docsRouteBasePath: ['/abe-redis'],
         docsDir: ['./contents/document', './contents/development'],
         blogDir: ['./contents/blog'],
         highlightSearchTermsOnTargetPage: true,
@@ -141,7 +141,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/python_logo_icon.png',
     navbar: {
-      title: 'be-component-loader-redis',
+      title: 'abe-redis',
       logo: {
         alt: 'My Site Logo',
         src: 'img/python_logo_icon.png',

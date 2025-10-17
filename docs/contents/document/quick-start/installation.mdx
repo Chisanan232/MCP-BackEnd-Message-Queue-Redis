@@ -91,10 +91,10 @@ Install the Redis backend package using your preferred package manager:
 
 ```bash
 # Install from PyPI
-pip install be-component-loader-redis
+pip install abe-redis
 
 # Verify installation
-pip show be-component-loader-redis
+pip show abe-redis
 ```
 
 </TabItem>
@@ -105,10 +105,10 @@ pip show be-component-loader-redis
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install the package
-uv pip install be-component-loader-redis
+uv pip install abe-redis
 
 # Verify installation
-uv pip show be-component-loader-redis
+uv pip show abe-redis
 ```
 
 </TabItem>
@@ -116,10 +116,10 @@ uv pip show be-component-loader-redis
 
 ```bash
 # Add to your project
-poetry add be-component-loader-redis
+poetry add abe-redis
 
 # Verify installation
-poetry show be-component-loader-redis
+poetry show abe-redis
 ```
 
 </TabItem>
@@ -323,12 +323,12 @@ For production environments, consider:
 python -m pip install --upgrade pip
 
 # Try installing with --no-cache-dir
-pip install --no-cache-dir be-component-loader-redis
+pip install --no-cache-dir abe-redis
 
 # Or use a virtual environment
 python -m venv venv
 source venv/bin/activate
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 ### Redis Connection Refused
@@ -357,8 +357,8 @@ redis-cli -h localhost -p 6379 ping
 **Solution**:
 ```bash
 # Reinstall the package
-pip uninstall be-component-loader-redis
-pip install be-component-loader-redis
+pip uninstall abe-redis
+pip install abe-redis
 
 # Verify Python path
 python -c "import sys; print('\n'.join(sys.path))"
