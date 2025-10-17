@@ -6,15 +6,15 @@ sidebar_position: 1
 
 # Redis Message Queue Backend for Slack MCP Server
 
-Welcome to **be-component-loader-redis** - a production-ready Redis-based message queue backend implementation for the [Slack MCP Server](https://github.com/Chisanan232/slack-mcp-server) project.
+Welcome to **abe-redis** - a production-ready Redis-based message queue backend implementation for the [Slack MCP Server](https://github.com/Chisanan232/slack-mcp-server) project.
 
-## What is be-component-loader-redis?
+## What is abe-redis?
 
-**be-component-loader-redis** is a Redis Streams-based message queue backend that integrates seamlessly with the Slack MCP Server's webhook-based event transfer system. It provides a reliable, scalable, and high-performance solution for handling Slack events using Redis as the message queue infrastructure.
+**abe-redis** is a Redis Streams-based message queue backend that integrates seamlessly with the Slack MCP Server's webhook-based event transfer system. It provides a reliable, scalable, and high-performance solution for handling Slack events using Redis as the message queue infrastructure.
 
 ## The Slack MCP Server Integration
 
-The [Slack MCP Server](https://github.com/Chisanan232/slack-mcp-server) is designed with a flexible, plugin-based architecture that supports webhook features to transfer Slack events through customizable message queue systems. This Redis backend can be installed via `pip install be-component-loader-redis` and used immediately with minimal configuration.
+The [Slack MCP Server](https://github.com/Chisanan232/slack-mcp-server) is designed with a flexible, plugin-based architecture that supports webhook features to transfer Slack events through customizable message queue systems. This Redis backend can be installed via `pip install abe-redis` and used immediately with minimal configuration.
 
 ### Event Flow Architecture
 
@@ -142,7 +142,7 @@ await backend.close()
 - **Modern Python**: Python 3.12+ with async/await patterns
 
 ### 📦 **Production-Ready**
-- **PyPI Distribution**: Install with `pip install be-component-loader-redis`
+- **PyPI Distribution**: Install with `pip install abe-redis`
 - **CI/CD Workflows**: Automated testing and publishing
 - **Test Coverage**: Comprehensive unit and integration tests
 - **Security**: Regular dependency updates and security scanning
@@ -183,7 +183,7 @@ Redis Streams provides the perfect balance of simplicity and power for Slack eve
 ### **Single Worker (Development)**
 ```bash
 # Install the package
-pip install be-component-loader-redis
+pip install abe-redis
 
 # Start Redis
 docker run -d -p 6379:6379 redis:7-alpine
@@ -197,7 +197,7 @@ python -m slack_mcp_server
 ### **Distributed Workers (Production)**
 ```bash
 # Install on all worker nodes
-pip install be-component-loader-redis
+pip install abe-redis
 
 # Configure for production Redis
 export QUEUE_BACKEND=redis
@@ -216,7 +216,7 @@ Get up and running with the Redis backend in minutes:
 
 ### ✅ **Quick Installation**
 ```bash
-pip install be-component-loader-redis
+pip install abe-redis
 ```
 
 ### ✅ **Basic Configuration**
