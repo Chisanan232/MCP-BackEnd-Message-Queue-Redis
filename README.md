@@ -89,15 +89,15 @@ from slack_mcp_plugin.backends.queue import RedisMessageQueueBackend
 async def main():
     # Create backend from environment variables
     backend = RedisMessageQueueBackend.from_env()
-    
+
     # Publish a message
     await backend.publish("slack:events", {"type": "message", "text": "Hello Redis!"})
-    
+
     # Consume messages
     async for message in backend.consume():
         print(f"Received: {message}")
         break
-    
+
     await backend.close()
 
 asyncio.run(main())
