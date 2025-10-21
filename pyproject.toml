@@ -71,11 +71,7 @@ default-groups = [
 ]
 
 [tool.hatch.build.targets.sdist]
-include = ["slack_mcp_plugin/"]
-packages = ["slack_mcp_plugin/backends/queue"]
-#artifacts = ["slack_mcp_plugin/py.typed"]
+packages = ["slack_mcp_plugin"]
 
 [tool.hatch.build.targets.wheel]
-include = ["slack_mcp_plugin/"]
-packages = ["slack_mcp_plugin/backends/queue"]
-#artifacts = ["slack_mcp/py.typed"]
+packages = ["slack_mcp_plugin"]
